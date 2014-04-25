@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Momentum</string>
+    <string name="activities_left">You have activities left to complete</string>
+    <string name="activities">Activities</string>
+    <string name="need_verified">Need Verified</string>
+    <string name="verify">Verify</string>
+    <string name="verify_activity">Verify Activity</string>
+    <string name="verify_points">Verify Points</string>
+    <string name="left">Activities Left</string>
+    <string name="goal">Goal</string>
+    <string name="users">Users</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_activities">Activities</string>
+    <string name="menu_goal">Goal</string>
+    <string name="menu_users">Users</string>
+    <string name="quote">Quote. - Quote</string>
+    <string name="progress">You need points to reach your goal</string>
+
+</resources>

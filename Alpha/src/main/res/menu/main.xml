@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.montyskew.momentum.Home" >
+    
+    <item android:id="@+id/menu_home"
+        android:title="@string/menu_home"
+        android:orderInCategory="1"/>
+    <item android:id="@+id/menu_activities"
+        android:title="@string/menu_activities"
+        android:orderInCategory="2"/>
+    <item android:id="@+id/menu_goal"
+        android:title="@string/menu_goal"
+        android:orderInCategory="3"/>
+    <item android:id="@+id/menu_users"
+        android:title="@string/menu_users"
+        android:orderInCategory="4"/>
+</menu>
