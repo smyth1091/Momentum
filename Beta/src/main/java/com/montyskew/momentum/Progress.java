@@ -1,7 +1,8 @@
 package com.montyskew.momentum;
 
+
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,20 +10,26 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 
-public class Home extends ActionBarActivity {
+public class Progress extends Activity {
+    public int activityCount;
+    public int goalProgress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
+        Users user = new Users();
+        //user.setUsersVisibility();
     }
 
-    public void updateProgress(int points, int goal){
+    public void updateProgress(int goalProgress, int goal){
         ProgressBar mProgress=(ProgressBar) findViewById(R.id.progressBar);
-        if(points<goal){
-            mProgress.setProgress(points);
+        if(goalProgress<goal){
+            mProgress.setProgress(goalProgress);
             mProgress.setMax(goal);
-           }
-        else if(points>=goal){
+        }
+        else if(goalProgress>=goal){
             mProgress.setProgress(goal);
             mProgress.setMax(goal);
         }
@@ -32,7 +39,7 @@ public class Home extends ActionBarActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -44,9 +51,9 @@ public class Home extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()){
-            case R.id.menu_home:
-                Intent home = new Intent(this,Home.class);
-                startActivity(home);
+            case R.id.menu_progress:
+                Intent progress = new Intent(this,Progress.class);
+                startActivity(progress);
                 return true;
             case R.id.menu_activities:
                 Intent activities = new Intent(this,Activities.class);

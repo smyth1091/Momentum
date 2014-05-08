@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.montyskew.momentum.Goal">
+
+    <TextView
+        android:id="@+id/goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/goal"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/new_goal"
+        android:text="New Goal"
+        android:layout_below="@+id/goal"
+        android:layout_centerHorizontal="true" />
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/goal"
+        android:background="#ffffff"
+        android:textAlignment="center">
+
+        <TableRow
+            android:id="@+id/goal_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/goal_name"
+                android:text="" />
+            <TextView
+                android:id="@+id/goal_points"/>
+
+        </TableRow>
+    </TableLayout>
+
+</RelativeLayout>

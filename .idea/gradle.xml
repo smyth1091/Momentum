@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="C:\Users\Clay\Documents\Code\AndroidStudioProjects\Momentum" />
-            <option value="C:\Users\Clay\Documents\Code\AndroidStudioProjects\Momentum\Alpha" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Alpha" />
           </set>
         </option>
       </GradleProjectSettings>

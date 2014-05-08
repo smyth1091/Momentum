@@ -22,21 +22,25 @@ import android.widget.Toast;
 
 
 public class Users extends Activity
-        implements OnClickListener {
+        implements OnEditorActionListener,
+        OnClickListener {
 
     private EditText newUser;
-    public static String password;
-    public static String username;
+    private String password;
+    private String username;
     private String origPwd;
     private String checkPwd;
     private String newPwd;
-    public static SharedPreferences savedValues;
+    private SharedPreferences savedValues;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
+
+        //set users visibility
+        setUsersVisibility();
 
         //reference widgets
         Button createUser = (Button) findViewById(R.id.create_user_button);
@@ -48,12 +52,10 @@ public class Users extends Activity
         createUser.setOnClickListener(this);
         delete.setOnClickListener(this);
         changePassword.setOnClickListener(this);
+        newUser.setOnEditorActionListener(this);
 
         //Shared Preferences
         savedValues = getSharedPreferences("SavedValues", MODE_PRIVATE);
-
-        //set users visibility
-        setUsersVisibility();
     }
 
     public void setUsersVisibility() {
@@ -73,8 +75,6 @@ public class Users extends Activity
             View createTable = findViewById(R.id.create_user_table);
             View user = findViewById(R.id.users);
             View table = findViewById(R.id.users_table);
-            TextView format = (TextView) findViewById(R.id.active_user);
-            format.setText(username);
             user.setVisibility(View.VISIBLE);
             createUser.setVisibility(View.INVISIBLE);
             table.setVisibility(View.VISIBLE);
@@ -117,6 +117,8 @@ public class Users extends Activity
                             } else {
                                 username = userNew;
                                 password = pwdNew;
+                                TextView format = (TextView) findViewById(R.id.active_user);
+                                format.setText(username);
                                 setUsersVisibility();
                             }
                         }
@@ -196,7 +198,8 @@ public class Users extends Activity
                                     }
                                 });
                                 empty.show();
-                            } else {
+                            }
+                            else {
                                 password = newPwd;
                                 New.setMessage("Password Changed");
                             }
@@ -227,7 +230,7 @@ public class Users extends Activity
     @Override
     public void onPause() {
         //save variables
-        SharedPreferences.Editor editor = savedValues.edit();
+        Editor editor = savedValues.edit();
         editor.putString("username", username);
         editor.putString("password", password);
         editor.commit();
@@ -238,9 +241,16 @@ public class Users extends Activity
     public void onResume() {
         super.onResume();
         //Resume Variables
-        username = savedValues.getString("username", username);
-        password = savedValues.getString("password", password);
-        setUsersVisibility();
+        username = savedValues.getString("username", "");
+        password = savedValues.getString("password", "");
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            createUser();
+        }
+        return false;
     }
 
     @Override
