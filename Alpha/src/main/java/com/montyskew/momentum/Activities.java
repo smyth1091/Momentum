@@ -1,20 +1,20 @@
 package com.montyskew.momentum;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import java.io.Serializable;
@@ -24,47 +24,63 @@ import java.util.Set;
 import java.util.TreeMap;
 
 
-public class Activities extends Activity implements View.OnClickListener, TextView.OnEditorActionListener, Serializable {
+public class Activities extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener, Serializable {
+    //Map to hold activity name and point value
     public static TreeMap<String, Integer> activities = new TreeMap<String, Integer>();
+    //Array to hold activity name for list
     public ArrayList<String> activityList = new ArrayList<String>();
-    public EditText newActivity;
     public ArrayAdapter adapter;
-    public ListView listView;
     public static Integer activityPoints = 0;
+    private View view;
+    private static EditText newActivity;
+    private static TextView userExist;
+    private static TextView exist;
+    private static TableLayout activity;
+    private static TextView addActivityText;
+    private static TextView activitiesText;
+    private static ListView listView;
+    private static Button verifyActivity;
+    private static Button addActivity;
 
+    //Create page
     @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        if (bundle != null) {
-            activities = (TreeMap) bundle.getSerializable("activities");
-            activityList = bundle.getStringArrayList("activitiesList");
-            activityPoints = bundle.getInt("activityCumulativePoints");
-        }
-        updateArrayList();
-        setContentView(R.layout.activity_activities);
-        listView = (ListView) findViewById(R.id.activities_table);
-
-        newActivity = (EditText) findViewById(R.id.create_activity_name);
-        Button addActivity = (Button) findViewById(R.id.create_activity_button);
-        Button verifyActivity = (Button) findViewById(R.id.verify_activity_button);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //Set layout
+        view = inflater.inflate(R.layout.activity_activities, container, false);
+        //Assign widgets
+        listView = (ListView) view.findViewById(R.id.activities_table);
+        userExist = (TextView) view.findViewById(R.id.activity_user_exist);
+        exist = (TextView) view.findViewById(R.id.activity_goal_exist);
+        addActivityText = (TextView) view.findViewById(R.id.add_activity);
+        activitiesText = (TextView) view.findViewById(R.id.activities);
+        activity = (TableLayout) view.findViewById(R.id.create_activity_table);
+        newActivity = (EditText) view.findViewById(R.id.create_activity_name);
+        addActivity = (Button) view.findViewById(R.id.create_activity_button);
+        verifyActivity = (Button) view.findViewById(R.id.verify_activity_button);
+        //Set listeners
         addActivity.setOnClickListener(this);
         verifyActivity.setOnClickListener(this);
         newActivity.setOnEditorActionListener(this);
-        adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_checked, android.R.id.text1, activityList);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(adapter);
+        //Fill activity list table
         updateActivityTable();
+        //Set widget visibility
         setActivitiesVisibility();
+        return view;
 
     }
 
+    //Prompt to create activity
     public void createActivity() {
         assert (newActivity.getText()) != null;
         final String activityName = (newActivity.getText()).toString();
+        //Check empty field
         if (activityName.equals("")) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(getActivity())
                     .setMessage("Activity Name Is Empty")
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
@@ -72,18 +88,19 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
                         }
                     }).show();
         } else {
-            final EditText points = new EditText(this);
-            final AlertDialog.Builder check = new AlertDialog.Builder(this);
+            final EditText points = new EditText(getActivity());
+            final AlertDialog.Builder check = new AlertDialog.Builder(getActivity());
             points.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_NUMBER);
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(getActivity())
                     .setMessage("Enter Activity Points")
                     .setView(points)
                     .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             String activityPointsText = (points.getText()).toString();
                             assert (points.getText()) != null;
-                            if (activityPointsText.equals("")) {
-                                check.setMessage("Activity Points Empty");
+                            //Check for bad data
+                            if (activityPointsText.equals("") || !isInt(activityPointsText)) {
+                                check.setMessage("Activity Points Empty/Not A Number");
                                 check.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         createActivity();
@@ -91,9 +108,12 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
                                 });
                                 check.show();
                             } else {
+                                //Add activity
                                 Integer activityPoints = Integer.parseInt(activityPointsText);
+                                //Add name and points to map
                                 activities.put(activityName, activityPoints);
                                 setActivitiesVisibility();
+                                //Add name to array
                                 activityList.add(activityName);
                                 updateActivityTable();
                                 newActivity.setText("");
@@ -103,6 +123,17 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
         }
     }
 
+    //Verify integer input
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    //Rebuilds list if arrayList is null(currently not in use)
     private void updateArrayList() {
         if (!activities.isEmpty()) {
             Set keys = activities.keySet();
@@ -114,13 +145,15 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
         }
     }
 
+    //Prompt for activity verification
     public void verifyActivity() {
-        final EditText pwd = new EditText(this);
+        final EditText pwd = new EditText(getActivity());
         pwd.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         final SparseBooleanArray checked = listView.getCheckedItemPositions();
-        final AlertDialog.Builder pass = new AlertDialog.Builder(this);
-        final AlertDialog.Builder check = new AlertDialog.Builder(this);
-        final AlertDialog.Builder size = new AlertDialog.Builder(this);
+        final AlertDialog.Builder pass = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder check = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder size = new AlertDialog.Builder(getActivity());
+        //Ensure item is checked
         if (checked.size() == 0) {
             size.setMessage("No Items Checked");
             size.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -138,12 +171,16 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
                 public void onClick(DialogInterface dialog, int whichButton) {
                     assert (pwd.getText()) != null;
                     String checkPwd = (pwd.getText()).toString();
+                    //Check password
                     if (checkPwd.equals(Users.password)) {
+                        //Determine which activity name is checked
                         for (int i = 0; i < checked.size(); i++) {
                             int position = checked.keyAt(i);
                             if (checked.valueAt(i)) {
                                 String name = (String.valueOf(adapter.getItem(position)));
+                                //Add points to progress
                                 updateProgress(name);
+                                setActivitiesVisibility();
                             }
                         }
                     } else {
@@ -168,84 +205,65 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
         }
     }
 
+    //Notify list of data change
     public void updateActivityTable() {
         adapter.notifyDataSetChanged();
     }
 
+    //Update progress
     public void updateProgress(String name) {
         Integer points = activities.get(name);
         activityPoints += points;
         activities.remove(name);
         activityList.remove(name);
         Progress.updateProgressBar();
+        Progress.setProgressVisibility();
         updateActivityTable();
     }
 
-    public void setActivitiesVisibility() {
+    //Set widget visibility
+    public static void setActivitiesVisibility() {
         if (Users.username == null) {
-            View createUser = findViewById(R.id.activities_user_exist);
-            View createGoal = findViewById(R.id.activities_goal_exist);
-            View createActivity = findViewById(R.id.create_activity_table);
-            View addActivity = findViewById(R.id.add_activity);
-            View activitiesText = findViewById(R.id.activities);
-            View activitiesTable = findViewById(R.id.activities_table);
-            View verifyButton = findViewById(R.id.verify_activity_button);
-            createUser.setVisibility(View.VISIBLE);
-            createGoal.setVisibility(View.INVISIBLE);
-            createActivity.setVisibility(View.INVISIBLE);
+            userExist.setVisibility(View.VISIBLE);
+            exist.setVisibility(View.INVISIBLE);
+            addActivityText.setVisibility(View.INVISIBLE);
+            activity.setVisibility(View.INVISIBLE);
             addActivity.setVisibility(View.INVISIBLE);
             activitiesText.setVisibility(View.INVISIBLE);
-            activitiesTable.setVisibility(View.INVISIBLE);
-            verifyButton.setVisibility(View.INVISIBLE);
-        } else if (Goal.goalText == null) {
-            View createUser = findViewById(R.id.activities_user_exist);
-            View createGoal = findViewById(R.id.activities_goal_exist);
-            View createActivity = findViewById(R.id.create_activity_table);
-            View addActivity = findViewById(R.id.add_activity);
-            View activitiesText = findViewById(R.id.activities);
-            View activitiesTable = findViewById(R.id.activities_table);
-            View verifyButton = findViewById(R.id.verify_activity_button);
-            createUser.setVisibility(View.INVISIBLE);
-            createGoal.setVisibility(View.VISIBLE);
-            createActivity.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            verifyActivity.setVisibility(View.INVISIBLE);
+        } else if (Goal.goalPointsText == null) {
+            userExist.setVisibility(View.INVISIBLE);
+            exist.setVisibility(View.VISIBLE);
+            addActivityText.setVisibility(View.INVISIBLE);
+            activity.setVisibility(View.INVISIBLE);
             addActivity.setVisibility(View.INVISIBLE);
             activitiesText.setVisibility(View.INVISIBLE);
-            activitiesTable.setVisibility(View.INVISIBLE);
-            verifyButton.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            verifyActivity.setVisibility(View.INVISIBLE);
         } else if (checkEmpty(activities)) {
-            View createUser = findViewById(R.id.activities_user_exist);
-            View createGoal = findViewById(R.id.activities_goal_exist);
-            View createActivity = findViewById(R.id.create_activity_table);
-            View addActivity = findViewById(R.id.add_activity);
-            View activitiesText = findViewById(R.id.activities);
-            View activitiesTable = findViewById(R.id.activities_table);
-            View verifyButton = findViewById(R.id.verify_activity_button);
-            createUser.setVisibility(View.INVISIBLE);
-            createGoal.setVisibility(View.INVISIBLE);
-            createActivity.setVisibility(View.VISIBLE);
+            userExist.setVisibility(View.INVISIBLE);
+            exist.setVisibility(View.INVISIBLE);
+            addActivityText.setVisibility(View.VISIBLE);
+            activity.setVisibility(View.VISIBLE);
             addActivity.setVisibility(View.VISIBLE);
             activitiesText.setVisibility(View.INVISIBLE);
-            activitiesTable.setVisibility(View.INVISIBLE);
-            verifyButton.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            verifyActivity.setVisibility(View.INVISIBLE);
         } else {
-            View createUser = findViewById(R.id.activities_user_exist);
-            View createGoal = findViewById(R.id.activities_goal_exist);
-            View createActivity = findViewById(R.id.create_activity_table);
-            View addActivity = findViewById(R.id.add_activity);
-            View activitiesText = findViewById(R.id.activities);
-            View activitiesTable = findViewById(R.id.activities_table);
-            View verifyButton = findViewById(R.id.verify_activity_button);
-            createUser.setVisibility(View.INVISIBLE);
-            createGoal.setVisibility(View.INVISIBLE);
-            createActivity.setVisibility(View.VISIBLE);
+            userExist.setVisibility(View.INVISIBLE);
+            exist.setVisibility(View.INVISIBLE);
+            addActivityText.setVisibility(View.VISIBLE);
+            activity.setVisibility(View.VISIBLE);
             addActivity.setVisibility(View.VISIBLE);
             activitiesText.setVisibility(View.VISIBLE);
-            activitiesTable.setVisibility(View.VISIBLE);
-            verifyButton.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            verifyActivity.setVisibility(View.VISIBLE);
         }
     }
 
-    public boolean checkEmpty(TreeMap map) {
+    //Check if map is empty
+    public static boolean checkEmpty(TreeMap map) {
         if (map != null) {
             if (map.isEmpty()) {
                 return true;
@@ -256,22 +274,15 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
         return true;
     }
 
+    //Save data in bundle
     @Override
-    protected void onSaveInstanceState(Bundle state) {
+    public void onSaveInstanceState(Bundle state) {
         state.putSerializable("activities", activities);
         state.putInt("activityCumulativePoints", activityPoints);
         super.onSaveInstanceState(state);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-        super.onRestoreInstanceState(state);
-        activities = (TreeMap) state.getSerializable("activities");
-        updateArrayList();
-        activityPoints = state.getInt("activityCumulativePoints");
-        updateActivityTable();
-    }
-
+    //Button actions
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -281,41 +292,6 @@ public class Activities extends Activity implements View.OnClickListener, TextVi
             case R.id.verify_activity_button:
                 verifyActivity();
                 break;
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.menu_progress:
-                Intent progress = new Intent(this, Progress.class);
-                startActivity(progress);
-                return true;
-            case R.id.menu_activities:
-                Intent activities = new Intent(this, Activities.class);
-                startActivity(activities);
-                return true;
-            case R.id.menu_goal:
-                Intent goal = new Intent(this, Goal.class);
-                startActivity(goal);
-                return true;
-            case R.id.menu_users:
-                Intent users = new Intent(this, Users.class);
-                startActivity(users);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 

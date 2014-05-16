@@ -1,77 +1,93 @@
 package com.montyskew.momentum;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.view.View.OnClickListener;
 import android.content.DialogInterface;
 
 
-public class Goal extends Activity
+public class Goal extends Fragment
         implements OnClickListener, OnEditorActionListener {
 
     public static Integer goalPoints = 0;
     public static String goalPointsText;
     public static String goalText;
     private EditText goalEditText;
-    private SharedPreferences saved;
+    private View view;
+    private static TextView createGoalText;
+    private static TableLayout createTable;
+    private static TextView exist;
+    private static TextView goal;
+    private static TableLayout table;
+    private static Button deleteGoal;
+    private static Button createGoal;
+    private static TextView formatText;
+    private static TextView formatPoints;
 
+
+    //Create view
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_goal);
-
-        //reference widgets
-        Button createGoal = (Button) findViewById(R.id.create_goal_button);
-        Button deleteGoal = (Button) findViewById(R.id.delete_goal);
-        goalEditText = (EditText) findViewById(R.id.create_goal_name);
-
-        //set listeners
+        //Set layout
+        view = inflater.inflate(R.layout.activity_goal, container, false);
+        //Assign widgets
+        createGoalText = (TextView) view.findViewById(R.id.create_goal);
+        createTable = (TableLayout) view.findViewById(R.id.create_goal_table);
+        exist = (TextView) view.findViewById(R.id.goal_user_exist);
+        goal = (TextView) view.findViewById(R.id.goal);
+        table = (TableLayout) view.findViewById(R.id.goal_table);
+        createGoal = (Button) view.findViewById(R.id.create_goal_button);
+        deleteGoal = (Button) view.findViewById(R.id.delete_goal);
+        goalEditText = (EditText) view.findViewById(R.id.create_goal_name);
+        formatText = (TextView) view.findViewById(R.id.active_goal);
+        formatPoints = (TextView) view.findViewById(R.id.active_goal_points);
+        //Set listeners
         createGoal.setOnClickListener(this);
         deleteGoal.setOnClickListener(this);
         goalEditText.setOnEditorActionListener(this);
-
-        //Shared Preferences
-        saved = getSharedPreferences("SavedValues", MODE_PRIVATE);
-
-        //set visibility
+        //Set visibility
         setGoalVisibility();
-            }
+        return view;
+    }
 
+    //New goal dialog
     private void newGoal() {
         assert (goalEditText.getText()) != null;
         final String newGoal = (goalEditText.getText()).toString();
+        //Check for empty string
         if (newGoal.equals("")) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(getActivity())
                     .setMessage("Goal Name Is Empty")
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                         }
                     }).show();
         } else {
-            final EditText points = new EditText(this);
-            final AlertDialog.Builder check = new AlertDialog.Builder(this);
+            final EditText points = new EditText(getActivity());
+            final AlertDialog.Builder check = new AlertDialog.Builder(getActivity());
             points.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_NUMBER);
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(getActivity())
                     .setMessage("Enter Goal Points")
                     .setView(points)
                     .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             goalPointsText = (points.getText()).toString();
                             assert (points.getText()) != null;
-                            if (points.equals("")) {
-                                check.setMessage("Goal Points Empty");
+                            //Check for bad input
+                            if (points.equals("") || !isInt(goalPointsText)) {
+                                check.setMessage("Goal Points Empty/Not A Number");
                                 check.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         newGoal();
@@ -79,21 +95,36 @@ public class Goal extends Activity
                                 });
                                 check.show();
                             } else {
+                                //Set goal points and name
                                 goalPoints = Integer.parseInt(goalPointsText);
                                 goalText = newGoal;
-                                Progress.startOver=false;
+                                //Reset start over state
+                                Progress.startOver = false;
+                                //Update visibility
                                 setGoalVisibility();
+                                Activities.setActivitiesVisibility();
                             }
                         }
                     }).show();
         }
     }
 
+    //Check if input is int
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    //Delete goal dialog
     public void deleteGoal() {
-        final EditText pwd = new EditText(this);
+        final EditText pwd = new EditText(getActivity());
         pwd.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        final AlertDialog.Builder pass = new AlertDialog.Builder(this);
-        final AlertDialog.Builder check = new AlertDialog.Builder(this);
+        final AlertDialog.Builder pass = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder check = new AlertDialog.Builder(getActivity());
         pass.setMessage("Enter Password");
         pass.setView(pwd);
         pass.setPositiveButton("Enter", new DialogInterface.OnClickListener() {
@@ -101,11 +132,14 @@ public class Goal extends Activity
             public void onClick(DialogInterface dialog, int whichButton) {
                 assert (pwd.getText()) != null;
                 String checkPwd = (pwd.getText()).toString();
+                //Check password
                 if (checkPwd.equals(Users.password)) {
                     goalText = null;
                     goalPoints = 0;
                     goalPointsText = null;
+                    goalEditText.setText("");
                     setGoalVisibility();
+                    Activities.setActivitiesVisibility();
                 } else {
                     check.setMessage("Password Incorrect");
                     check.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -127,87 +161,58 @@ public class Goal extends Activity
         }).show();
     }
 
-    public void setGoalVisibility() {
+    //Set goal visibility
+    public static void setGoalVisibility() {
         if (Users.username == null) {
-            View createGoal = findViewById(R.id.create_goal);
-            View createTable = findViewById(R.id.create_goal_table);
-            View exist = findViewById(R.id.goal_user_exist);
-            View goal = findViewById(R.id.goal);
-            View table = findViewById(R.id.goal_table);
-            View button = findViewById(R.id.delete_goal);
+            createGoalText.setVisibility(View.INVISIBLE);
             goal.setVisibility(View.INVISIBLE);
             exist.setVisibility(View.VISIBLE);
             createGoal.setVisibility(View.INVISIBLE);
             table.setVisibility(View.INVISIBLE);
             createTable.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.INVISIBLE);
         } else if (goalText == null) {
-            View createGoal = findViewById(R.id.create_goal);
-            View createTable = findViewById(R.id.create_goal_table);
-            View exist = findViewById(R.id.goal_user_exist);
-            View goal = findViewById(R.id.goal);
-            View table = findViewById(R.id.goal_table);
-            View button = findViewById(R.id.delete_goal);
-            EditText format = (EditText) findViewById(R.id.create_goal_name);
-            format.setText("");
-            exist.setVisibility(View.INVISIBLE);
+            createGoalText.setVisibility(View.VISIBLE);
             goal.setVisibility(View.INVISIBLE);
+            exist.setVisibility(View.INVISIBLE);
             createGoal.setVisibility(View.VISIBLE);
             table.setVisibility(View.INVISIBLE);
             createTable.setVisibility(View.VISIBLE);
-            button.setVisibility(View.INVISIBLE);
         } else {
-            View createGoal = findViewById(R.id.create_goal);
-            View createTable = findViewById(R.id.create_goal_table);
-            View exist = findViewById(R.id.goal_user_exist);
-            View goal = findViewById(R.id.goal);
-            View table = findViewById(R.id.goal_table);
-            View button = findViewById(R.id.delete_goal);
-            TextView formatText = (TextView) findViewById(R.id.active_goal);
-            TextView formatPoints = (TextView) findViewById(R.id.active_goal_points);
-            formatText.setText(goalText);
-            formatPoints.setText(goalPointsText);
-            exist.setVisibility(View.INVISIBLE);
+            createGoalText.setVisibility(View.INVISIBLE);
             goal.setVisibility(View.VISIBLE);
+            exist.setVisibility(View.INVISIBLE);
             createGoal.setVisibility(View.INVISIBLE);
             table.setVisibility(View.VISIBLE);
-            createTable.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.VISIBLE);
+            createTable.setVisibility(View.VISIBLE);
+            formatText.setText(goalText);
+            formatPoints.setText(goalPointsText);
+
         }
     }
 
+    //Bundle goal data on exit
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public void onSaveInstanceState(Bundle state) {
+        state.putString("goalText", goalText);
+        state.putInt("goalPoints", goalPoints);
+        state.putString("goalPointsText", goalPointsText);
+        super.onSaveInstanceState(state);
     }
 
     @Override
     public void onPause() {
-        //save variables
-        SharedPreferences.Editor editor = saved.edit();
-        editor.putString("goalText", goalText);
-        editor.putInt("goalPoints", goalPoints);
-        editor.putString("goalPointsText", goalPointsText);
-        editor.commit();
         super.onPause();
+        setGoalVisibility();
     }
 
     @Override
     public void onResume() {
+        setGoalVisibility();
         super.onResume();
-        if (Progress.startOver) {
-            setGoalVisibility();
-        } else {
-            goalText = saved.getString("goalText", goalText);
-            goalPoints = saved.getInt("goalPoints", goalPoints);
-            goalPointsText = saved.getString("goalPointsText", goalPointsText);
-            setGoalVisibility();
-        }
+
     }
 
+    //Button actions
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -220,32 +225,6 @@ public class Goal extends Activity
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.menu_progress:
-                Intent progress = new Intent(this, Progress.class);
-                startActivity(progress);
-                return true;
-            case R.id.menu_activities:
-                Intent activities = new Intent(this, Activities.class);
-                startActivity(activities);
-                return true;
-            case R.id.menu_goal:
-                Intent goal = new Intent(this, Goal.class);
-                startActivity(goal);
-                return true;
-            case R.id.menu_users:
-                Intent users = new Intent(this, Users.class);
-                startActivity(users);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

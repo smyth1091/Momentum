@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="instructions">Momentum is an app to help you reach a goal by completing activities.\n\n
+    Instructions:\n
+    1.Create a user that will verify all activities from the User page.\n\n
+    2.Create a goal from the Goal page with a goal point value.\n\n
+    3.Add activities from the Activities page with a point value.\n\n
+    4.Come back to the Progress page to check your progress.\n\n\n\n\n\n</string>
     <string name="app_name">Momentum</string>
-    <string name="activities_left">Create A Goal From The Menu</string>
+    <string name="activity_progress">Progress</string>
     <string name="activities">Activities</string>
     <string name="verify_activity">Verify Activities</string>
     <string name="left">Activities</string>
     <string name="goal">Goal</string>
-    <string name="goal_points">Points</string>
     <string name="user_exist">Create A User First</string>
     <string name="goal_exist">Create A Goal First</string>
-    <string name="activity_exist">Complete An Activity First</string>
+    <string name="goal_points">Points</string>
     <string name="congrads">Congratulations You Have Reached Your Goal!</string>
     <string name="start_over">Start Over</string>
     <string name="add_activity">Add An Activity</string>

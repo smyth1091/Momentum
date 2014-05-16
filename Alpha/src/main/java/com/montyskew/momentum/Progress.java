@@ -1,36 +1,52 @@
 package com.montyskew.momentum;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-public class Progress extends Activity implements View.OnClickListener {
+public class Progress extends Fragment implements View.OnClickListener {
     private static ProgressBar mProgress;
     public static Boolean startOver = false;
+    private View view;
+    private static TextView instructions;
+    private static TextView congrads;
+    private static TextView progress;
+    private static TextView progressValue;
+    private static ImageView image;
+    private static Button startOverButton;
 
+    //Create page
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_progress);
-        mProgress = (ProgressBar) findViewById(R.id.progress_bar);
-        Button startOver = (Button) findViewById(R.id.start_over);
-        startOver.setOnClickListener(this);
+        //Set layout
+        view = inflater.inflate(R.layout.activity_progress, container, false);
+        //Assign widgets
+        instructions = (TextView) view.findViewById(R.id.instructions);
+        mProgress = (ProgressBar) view.findViewById(R.id.progress_bar);
+        congrads = (TextView) view.findViewById(R.id.progress_congrads);
+        progress = (TextView) view.findViewById(R.id.progress_current);
+        progressValue = (TextView) view.findViewById(R.id.progress_value);
+        image = (ImageView) view.findViewById(R.id.progress_image);
+        startOverButton = (Button) view.findViewById(R.id.start_over);
+        startOverButton.setOnClickListener(this);
+        //Set visibility
+        updateProgressBar();
         setProgressVisibility();
+        return view;
     }
 
+    //Set progress bar visibility
     public static void updateProgressBar() {
         if (Activities.activityPoints < Goal.goalPoints) {
             mProgress.setProgress(Activities.activityPoints);
@@ -45,8 +61,9 @@ public class Progress extends Activity implements View.OnClickListener {
         }
     }
 
+    //Start over dialog
     private void startOver() {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(getActivity())
                 .setMessage("Are You Sure?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -56,6 +73,7 @@ public class Progress extends Activity implements View.OnClickListener {
                         Goal.goalPointsText = null;
                         startOver = true;
                         setProgressVisibility();
+                        Activities.setActivitiesVisibility();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -65,155 +83,44 @@ public class Progress extends Activity implements View.OnClickListener {
                 }).show();
     }
 
-    public void setProgressVisibility() {
-        if (Users.username == null) {
-            View user = findViewById(R.id.progress_user_exist);
-            View goal = findViewById(R.id.progress_goal_exist);
-            View activity = findViewById(R.id.progress_activity_exist);
-            View congrads = findViewById(R.id.progress_congrads);
-            View progress = findViewById(R.id.progress_current);
-            View progressValue = findViewById(R.id.progress_value);
-            View progressBar = findViewById(R.id.progress_bar);
-            View image = findViewById(R.id.progress_image);
-            View button = findViewById(R.id.start_over);
+    //Set widget visibility
+    public static void setProgressVisibility() {
+        if (Activities.activities.isEmpty() && Activities.activityPoints <= 0) {
+            instructions.setVisibility(View.VISIBLE);
             image.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.INVISIBLE);
-            user.setVisibility(View.VISIBLE);
-            goal.setVisibility(View.INVISIBLE);
-            activity.setVisibility(View.INVISIBLE);
+            startOverButton.setVisibility(View.INVISIBLE);
             congrads.setVisibility(View.INVISIBLE);
             progress.setVisibility(View.INVISIBLE);
             progressValue.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-        } else if (Goal.goalText == null) {
-            View user = findViewById(R.id.progress_user_exist);
-            View goal = findViewById(R.id.progress_goal_exist);
-            View activity = findViewById(R.id.progress_activity_exist);
-            View congrads = findViewById(R.id.progress_congrads);
-            View progress = findViewById(R.id.progress_current);
-            View progressValue = findViewById(R.id.progress_value);
-            View progressBar = findViewById(R.id.progress_bar);
-            View image = findViewById(R.id.progress_image);
-            View button = findViewById(R.id.start_over);
-            image.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.INVISIBLE);
-            user.setVisibility(View.INVISIBLE);
-            goal.setVisibility(View.VISIBLE);
-            activity.setVisibility(View.INVISIBLE);
-            congrads.setVisibility(View.INVISIBLE);
-            progress.setVisibility(View.INVISIBLE);
-            progressValue.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-        } else if (Activities.activities.isEmpty() && Activities.activityPoints <= 0) {
-            View user = findViewById(R.id.progress_user_exist);
-            View goal = findViewById(R.id.progress_goal_exist);
-            View activity = findViewById(R.id.progress_activity_exist);
-            View congrads = findViewById(R.id.progress_congrads);
-            View progress = findViewById(R.id.progress_current);
-            View progressValue = findViewById(R.id.progress_value);
-            View progressBar = findViewById(R.id.progress_bar);
-            View image = findViewById(R.id.progress_image);
-            View button = findViewById(R.id.start_over);
-            image.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.INVISIBLE);
-            user.setVisibility(View.INVISIBLE);
-            goal.setVisibility(View.INVISIBLE);
-            activity.setVisibility(View.VISIBLE);
-            congrads.setVisibility(View.INVISIBLE);
-            progress.setVisibility(View.INVISIBLE);
-            progressValue.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
+            mProgress.setVisibility(View.INVISIBLE);
         } else if (Activities.activityPoints >= Goal.goalPoints) {
-            View user = findViewById(R.id.progress_user_exist);
-            View goal = findViewById(R.id.progress_goal_exist);
-            View activity = findViewById(R.id.progress_activity_exist);
-            View congrads = findViewById(R.id.progress_congrads);
-            View progress = findViewById(R.id.progress_current);
-            View progressValue = findViewById(R.id.progress_value);
-            View progressBar = findViewById(R.id.progress_bar);
-            View image = findViewById(R.id.progress_image);
-            View button = findViewById(R.id.start_over);
+            instructions.setVisibility(View.INVISIBLE);
             image.setVisibility(View.VISIBLE);
-            button.setVisibility(View.VISIBLE);
-            user.setVisibility(View.INVISIBLE);
-            goal.setVisibility(View.INVISIBLE);
-            activity.setVisibility(View.INVISIBLE);
+            startOverButton.setVisibility(View.VISIBLE);
             congrads.setVisibility(View.VISIBLE);
             progress.setVisibility(View.INVISIBLE);
             progressValue.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+            mProgress.setVisibility(View.VISIBLE);
         } else {
-            View user = findViewById(R.id.progress_user_exist);
-            View goal = findViewById(R.id.progress_goal_exist);
-            View activity = findViewById(R.id.progress_activity_exist);
-            View congrads = findViewById(R.id.progress_congrads);
-            View progress = findViewById(R.id.progress_current);
-            View progressValue = findViewById(R.id.progress_value);
-            TextView progressValueText = (TextView) findViewById(R.id.progress_value);
-            View progressBar = findViewById(R.id.progress_bar);
-            View image = findViewById(R.id.progress_image);
-            View button = findViewById(R.id.start_over);
+            instructions.setVisibility(View.INVISIBLE);
             image.setVisibility(View.INVISIBLE);
-            button.setVisibility(View.INVISIBLE);
-            user.setVisibility(View.INVISIBLE);
-            goal.setVisibility(View.INVISIBLE);
-            activity.setVisibility(View.INVISIBLE);
+            startOverButton.setVisibility(View.INVISIBLE);
             congrads.setVisibility(View.INVISIBLE);
             progress.setVisibility(View.VISIBLE);
             progressValue.setVisibility(View.VISIBLE);
-            progressValueText.setText(Activities.activityPoints + " / " + Goal.goalPoints);
-            progressBar.setVisibility(View.VISIBLE);
+            progressValue.setText(Activities.activityPoints + " / " + Goal.goalPoints);
+            mProgress.setVisibility(View.VISIBLE);
         }
     }
 
-    @Override
-    public void onPause() {
-        //save variables
-        super.onPause();
-    }
-
+    //Set visibility on resume
     @Override
     public void onResume() {
         super.onResume();
-        updateProgressBar();
         setProgressVisibility();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.menu_progress:
-                Intent progress = new Intent(this, Progress.class);
-                startActivity(progress);
-                return true;
-            case R.id.menu_activities:
-                Intent activities = new Intent(this, Activities.class);
-                startActivity(activities);
-                return true;
-            case R.id.menu_goal:
-                Intent goal = new Intent(this, Goal.class);
-                startActivity(goal);
-                return true;
-            case R.id.menu_users:
-                Intent users = new Intent(this, Users.class);
-                startActivity(users);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
+    //Button action
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

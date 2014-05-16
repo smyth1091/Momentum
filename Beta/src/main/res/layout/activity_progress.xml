@@ -7,51 +7,108 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.montyskew.momentum.Goal">
+    tools:context="com.montyskew.momentum.Home">
+
 
     <TextView
-        android:id="@+id/goal"
+        android:id="@+id/progress_congrads"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="false"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="@string/goal"
+        android:text="@string/congrads"
         android:textColor="#ffffff"
         android:textSize="34sp"
         android:typeface="monospace" />
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:gravity="center_horizontal"
-        android:id="@+id/new_goal"
-        android:text="New Goal"
-        android:layout_below="@+id/goal"
-        android:layout_centerHorizontal="true" />
-
-    <TableLayout
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/progress_user_exist"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/goal"
-        android:background="#ffffff"
-        android:textAlignment="center">
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/user_exist"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
 
-        <TableRow
-            android:id="@+id/goal_row"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp">
+    <TextView
+        android:id="@+id/progress_goal_exist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/goal_exist"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
 
-            <EditText
-                android:id="@+id/goal_name"
-                android:text="" />
-            <TextView
-                android:id="@+id/goal_points"/>
+    <TextView
+        android:id="@+id/progress_activity_exist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/activity_exist"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
 
-        </TableRow>
-    </TableLayout>
+    <TextView
+        android:id="@+id/progress_current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progress_activity_exist"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="75dp"
+        android:gravity="center"
+        android:text="@string/progress"
+        android:textColor="#ffffff"
+        android:textSize="30sp"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/progress_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progress_current"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="30sp"
+        android:typeface="monospace" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_below="@+id/progress_value"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="40dip"
+        android:progressDrawable="@drawable/progress_bar" />
+
+    <Button
+        android:layout_height="80dp"
+        android:id="@+id/start_over"
+        style="@style/Button"
+        android:layout_below="@+id/progress_image"
+        android:layout_width="120dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/start_over" />
+
+    <ImageView
+        android:id="@+id/progress_image"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/stick_figure"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/progress_bar"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

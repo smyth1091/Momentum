@@ -1,63 +1,114 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.montyskew.momentum.Activities"
-    android:background="@drawable/background">
+    tools:context="com.montyskew.momentum.Activities">
 
     <TextView
-        android:text="@string/need_verified" android:layout_centerHorizontal="true"
+        android:id="@+id/activities_goal_exist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ffffff"
-        android:typeface="monospace"
-        android:id="@+id/need_verified"
         android:layout_alignParentEnd="false"
-        android:textSize="34sp" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/goal_exist"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/activities_user_exist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/user_exist"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/add_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/add_activity"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace" />
 
     <TableLayout
+        android:id="@+id/create_activity_table"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/need_verified"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:textAlignment="center"
-        android:background="#ffffff">
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/add_activity"
+        android:background="#ffffff"
+        android:stretchColumns="0,1">
+
         <TableRow
-            android:id="@+id/row1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            >
-        <Button
-            android:id="@+id/verify"
-            android:padding="2dp"
-            android:text="@string/verify"/>
-        <TextView
-            android:id="@+id/verify_activity"
-            android:padding="5dp"
-            android:text="@string/verify_activity"/>
-        <TextView
-            android:id="@+id/verify_points"
-            android:text="@string/verify_points"/>
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/create_activity_name"
+                android:layout_width="180dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:hint="@string/enter_activity"
+                android:inputType="textNoSuggestions" />
+
+            <Button
+                android:id="@+id/create_activity_button"
+                style="@style/Button"
+                android:layout_width="80dp"
+                android:text="@string/create_activity_button" />
+
         </TableRow>
-        </TableLayout>
+    </TableLayout>
 
     <TextView
+        android:id="@+id/activities"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/left"
-        android:textColor="#ffffff"
-        android:typeface="monospace"
-        android:textSize="30sp"
-        android:text="@string/left"
-        android:layout_below="@+id/need_verified"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="75dp" />
+        android:layout_marginTop="5dp"
+        android:text="@string/left"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:typeface="monospace"
+        android:layout_below="@+id/create_activity_table" />
+    <Button
+        android:id="@+id/verify_activity_button"
+        android:layout_below="@+id/activities"
+        android:layout_height="50dp"
+        style="@style/Button"
+        android:layout_width="match_parent"
+        android:text="@string/verify_activity"/>
 
-
+    <ListView
+        android:id="@+id/activities_table"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/verify_activity_button"
+        android:layout_gravity="center_horizontal"
+        android:background="#ffffff"
+        android:choiceMode="multipleChoice"
+        android:clickable="true"
+        android:divider="#000"
+        android:padding="12dp"
+        android:dividerHeight="1dp"
+        android:textAlignment="center">
+    </ListView>
 </RelativeLayout>
